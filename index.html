@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI产品经理学习笔记</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-page: #f0f1f3;
+      --bg-white: #ffffff;
+      --bg-alt: #fafafa;
+      --bg-subtle: #f8f9fa;
+      --border: #e0e0e0;
+      --border-light: #eeeeee;
+      --border-input: #d0d0d0;
+      --text-primary: #1a1a1a;
+      --text-body: #333333;
+      --text-secondary: #555555;
+      --text-muted: #888888;
+      --text-dim: #999999;
+      --blue: #1565c0;
+      --blue-bg: #e3f2fd;
+      --blue-hover: #e8f0fe;
+      --green: #2e7d32;
+      --green-bg: #e8f5e9;
+      --orange: #e65100;
+      --orange-bg: #fff3e0;
+      --formula-bg: #fff8e1;
+      --formula-border: #ffecb3;
+      --formula-color: #f57f17;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: -apple-system, 'PingFang SC', 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.7;
+      letter-spacing: 0;
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      width: 292px;
+      height: 100vh;
+      flex-shrink: 0;
+      background: var(--bg-white);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .side-head {
+      padding: 18px 18px 14px;
+      border-bottom: 1px solid var(--border-light);
+      background: var(--bg-alt);
+    }
+
+    .book-title {
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.35;
+      margin-bottom: 6px;
+    }
+
+    .book-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .search-wrap {
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 36px;
+      border: 1px solid var(--border-input);
+      border-radius: 8px;
+      padding: 0 12px 0 34px;
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      background: var(--bg-white);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .search-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 2px rgba(21, 101, 192, 0.1);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      font-size: 13px;
+      pointer-events: none;
+    }
+
+    .nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+    }
+
+    .nav::-webkit-scrollbar,
+    .content::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .nav::-webkit-scrollbar-thumb,
+    .content::-webkit-scrollbar-thumb {
+      background: var(--border-input);
+      border-radius: 3px;
+    }
+
+    .nav-group-label {
+      padding: 10px 8px 6px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-dim);
+    }
+
+    .note-link {
+      display: block;
+      padding: 10px;
+      margin-bottom: 6px;
+      border-radius: 6px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.35;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .note-link:hover,
+    .note-link.active {
+      background: var(--blue-hover);
+      color: var(--blue);
+    }
+
+    .note-link.coming {
+      color: var(--text-muted);
+      cursor: default;
+    }
+
+    .note-link.coming:hover {
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+    }
+
+    .note-name {
+      display: block;
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 3px;
+    }
+
+    .note-desc {
+      display: block;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .nav-empty {
+      display: none;
+      padding: 16px 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .content {
+      flex: 1;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 28px;
+    }
+
+    .reader-grid {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 960px) 220px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .page {
+      width: 100%;
+      min-width: 0;
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .toc-panel {
+      position: sticky;
+      top: 0;
+      max-height: calc(100vh - 56px);
+      overflow-y: auto;
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .toc-panel::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+
+    .toc-panel::-webkit-scrollbar-thumb {
+      background: var(--border-input);
+      border-radius: 3px;
+    }
+
+    .toc-title {
+      padding: 4px 4px 10px;
+      margin-bottom: 6px;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-secondary);
+    }
+
+    .toc-link {
+      display: block;
+      padding: 6px 8px;
+      border-radius: 6px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 12px;
+      line-height: 1.35;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .toc-link:hover,
+    .toc-link.active {
+      background: var(--blue-hover);
+      color: var(--blue);
+      font-weight: 700;
+    }
+
+    .toc-link.sub {
+      padding-left: 18px;
+      font-size: 11px;
+    }
+
+    .hero {
+      padding: 32px 38px 26px;
+      background: var(--bg-alt);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      height: 24px;
+      padding: 0 10px;
+      border-radius: 12px;
+      background: var(--green-bg);
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: 30px;
+      line-height: 1.25;
+      margin-bottom: 12px;
+      font-weight: 850;
+    }
+
+    .lead {
+      max-width: 800px;
+      font-size: 15px;
+      color: var(--text-secondary);
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      height: 26px;
+      padding: 0 10px;
+      border-radius: 13px;
+      border: 1px solid var(--border);
+      background: var(--bg-white);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .article {
+      padding: 28px 38px 42px;
+    }
+
+    section {
+      scroll-margin-top: 24px;
+      padding: 20px 0 24px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    section:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    h2 {
+      font-size: 21px;
+      line-height: 1.35;
+      margin-bottom: 14px;
+      font-weight: 800;
+    }
+
+    h3 {
+      font-size: 16px;
+      line-height: 1.45;
+      margin: 18px 0 10px;
+      font-weight: 800;
+    }
+
+    p {
+      font-size: 14px;
+      color: var(--text-body);
+      margin: 9px 0;
+    }
+
+    ul,
+    ol {
+      margin: 10px 0 10px 20px;
+      color: var(--text-body);
+      font-size: 14px;
+    }
+
+    li {
+      margin: 5px 0;
+    }
+
+    .simple-box {
+      margin: 14px 0;
+      padding: 14px 16px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+    }
+
+    .simple-box strong {
+      color: var(--text-primary);
+    }
+
+    .concept-map {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin: 16px 0 6px;
+    }
+
+    .map-node {
+      min-height: 74px;
+      padding: 12px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-white);
+    }
+
+    .map-node .name {
+      display: block;
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .map-node .desc {
+      display: block;
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--text-muted);
+    }
+
+    .map-arrow {
+      display: none;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 14px 0;
+    }
+
+    .capability-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .note-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-white);
+      overflow: hidden;
+    }
+
+    .note-card-head {
+      padding: 10px 14px;
+      background: var(--bg-alt);
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .note-card-body {
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--text-body);
+    }
+
+    .mini-card {
+      min-height: 112px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-white);
+    }
+
+    .mini-card-title {
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .mini-card-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      margin: 14px 0;
+    }
+
+    .flow-step {
+      padding: 10px;
+      min-height: 82px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-subtle);
+    }
+
+    .flow-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      margin-bottom: 7px;
+      border-radius: 10px;
+      background: var(--blue-bg);
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .flow-title {
+      display: block;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .flow-desc {
+      display: block;
+      font-size: 11px;
+      line-height: 1.45;
+      color: var(--text-muted);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      height: 21px;
+      padding: 0 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .tag.blue {
+      background: var(--blue-bg);
+      color: var(--blue);
+    }
+
+    .tag.green {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .tag.orange {
+      background: var(--orange-bg);
+      color: var(--orange);
+    }
+
+    .compare-table {
+      width: 100%;
+      min-width: 620px;
+      border-collapse: collapse;
+      margin: 14px 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      display: table;
+    }
+
+    .compare-table th {
+      background: #f5f6f7;
+      padding: 9px 10px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-secondary);
+      border-bottom: 2px solid var(--border);
+    }
+
+    .compare-table td {
+      padding: 10px;
+      font-size: 13px;
+      color: var(--text-body);
+      border-bottom: 1px solid #f0f0f0;
+      vertical-align: top;
+    }
+
+    .compare-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    code {
+      font-family: 'SF Mono', Consolas, Menlo, monospace;
+      font-size: 12px;
+      background: var(--formula-bg);
+      color: var(--formula-color);
+      border: 1px solid var(--formula-border);
+      border-radius: 4px;
+      padding: 1px 5px;
+    }
+
+    .formula {
+      margin: 14px 0;
+      padding: 14px 16px;
+      border: 1px solid var(--formula-border);
+      background: var(--formula-bg);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text-body);
+    }
+
+    .formula-line {
+      font-family: 'SF Mono', Consolas, Menlo, monospace;
+      color: var(--formula-color);
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .callout {
+      margin: 14px 0;
+      padding: 14px 16px;
+      border-left: 4px solid var(--blue);
+      background: #f7fbff;
+      border-radius: 0 8px 8px 0;
+      font-size: 13px;
+      color: var(--text-body);
+    }
+
+    .checklist {
+      list-style: none;
+      margin-left: 0;
+    }
+
+    .checklist li {
+      position: relative;
+      padding-left: 22px;
+    }
+
+    .checklist li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+
+    .footer-note {
+      padding: 16px 38px;
+      background: var(--bg-alt);
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    mark {
+      background: #fff3cd;
+      color: inherit;
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+
+    .table-scroll {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin: 14px 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .table-scroll .compare-table {
+      margin: 0;
+      border: none;
+      border-radius: 0;
+    }
+
+    @media (max-width: 1180px) {
+      .reader-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .toc-panel {
+        position: relative;
+        top: auto;
+        max-height: none;
+        order: -1;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .app {
+        display: block;
+      }
+
+      .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        z-index: 2;
+      }
+
+      .nav {
+        max-height: none;
+        overflow-x: auto;
+        overflow-y: hidden;
+        display: flex;
+        gap: 8px;
+        padding: 10px 12px 12px;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .nav-group-label {
+        display: none;
+      }
+
+      .note-link {
+        min-width: 180px;
+        margin-bottom: 0;
+        border: 1px solid var(--border);
+        background: var(--bg-white);
+      }
+
+      .note-link.active {
+        border-color: #90caf9;
+      }
+
+      .content {
+        height: auto;
+        overflow: visible;
+        padding: 14px;
+      }
+
+      .reader-grid {
+        gap: 12px;
+      }
+
+      .page,
+      .toc-panel {
+        border-radius: 10px;
+      }
+
+      .hero,
+      .article,
+      .footer-note {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .concept-map,
+      .card-grid,
+      .capability-grid,
+      .flow {
+        grid-template-columns: 1fr;
+      }
+
+      .toc-panel {
+        padding: 10px;
+      }
+
+      .toc-title {
+        padding: 2px 2px 8px;
+      }
+
+      .toc-panel {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .toc-title {
+        flex: 0 0 auto;
+        margin-bottom: 0;
+        border-bottom: none;
+        padding-right: 8px;
+        border-right: 1px solid var(--border-light);
+      }
+
+      .toc-link,
+      .toc-link.sub {
+        flex: 0 0 auto;
+        padding: 6px 10px;
+        border: 1px solid var(--border-light);
+        border-radius: 14px;
+        background: var(--bg-white);
+        font-size: 12px;
+      }
+
+      h1 {
+        font-size: 25px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      body {
+        background: var(--bg-white);
+      }
+
+      .side-head {
+        padding: 14px 14px 12px;
+      }
+
+      .book-title {
+        font-size: 16px;
+      }
+
+      .book-subtitle {
+        margin-bottom: 10px;
+      }
+
+      .search-input {
+        height: 38px;
+        font-size: 14px;
+      }
+
+      .content {
+        padding: 0;
+      }
+
+      .reader-grid {
+        gap: 0;
+      }
+
+      .page {
+        border-left: none;
+        border-right: none;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .toc-panel {
+        border-left: none;
+        border-right: none;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .hero {
+        padding: 24px 16px 20px;
+      }
+
+      .article {
+        padding: 18px 16px 30px;
+      }
+
+      .footer-note {
+        padding: 14px 16px;
+      }
+
+      .eyebrow {
+        height: 22px;
+        font-size: 10px;
+      }
+
+      h1 {
+        font-size: 23px;
+        line-height: 1.28;
+      }
+
+      h2 {
+        font-size: 19px;
+      }
+
+      h3 {
+        font-size: 15px;
+      }
+
+      p,
+      ul,
+      ol {
+        font-size: 14px;
+      }
+
+      section {
+        padding: 18px 0 22px;
+      }
+
+      .lead {
+        font-size: 14px;
+      }
+
+      .meta-row {
+        gap: 6px;
+      }
+
+      .pill {
+        height: auto;
+        min-height: 24px;
+        padding: 3px 9px;
+        font-size: 11px;
+      }
+
+      .simple-box,
+      .formula,
+      .callout {
+        padding: 12px;
+      }
+
+      .note-card-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .tag {
+        align-self: flex-start;
+      }
+
+      .map-node,
+      .mini-card,
+      .flow-step,
+      .note-card {
+        border-radius: 8px;
+      }
+
+      .compare-table {
+        min-width: 560px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="side-head">
+        <div class="book-title">AI产品经理学习笔记</div>
+        <div class="book-subtitle">第一篇：AI 基础认知</div>
+        <div class="search-wrap">
+          <span class="search-icon">⌕</span>
+          <input id="navSearch" class="search-input" type="search" placeholder="搜索笔记，例如 数据基础">
+        </div>
+      </div>
+      <nav class="nav" id="navList" aria-label="学习笔记列表">
+        <div class="nav-group-label">学习笔记</div>
+        <a class="note-link active" href="#overview" data-title="AI基础知识 第一篇 AI基础认知">
+          <span class="note-name">AI基础知识</span>
+          <span class="note-desc">第一篇 · 概念、能力、数据、模型与落地</span>
+        </a>
+        <div class="note-link coming" data-title="数据基础 第二篇">
+          <span class="note-name">数据基础</span>
+          <span class="note-desc">后续笔记 · 样本、标签、特征与数据质量</span>
+        </div>
+        <div class="note-link coming" data-title="Prompt与上下文 第三篇">
+          <span class="note-name">Prompt与上下文</span>
+          <span class="note-desc">后续笔记 · 指令、上下文窗口与任务拆解</span>
+        </div>
+        <div class="note-link coming" data-title="RAG与Agent 第四篇">
+          <span class="note-name">RAG与Agent</span>
+          <span class="note-desc">后续笔记 · 知识库问答与工具调用</span>
+        </div>
+        <div class="note-link coming" data-title="AI产品设计 第五篇">
+          <span class="note-name">AI产品设计</span>
+          <span class="note-desc">后续笔记 · 场景、体验、评估与风险</span>
+        </div>
+        <div class="nav-empty" id="navEmpty">没有匹配到标题</div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <div class="reader-grid">
+        <article class="page">
+          <header class="hero">
+            <span class="eyebrow">第 1 篇学习笔记</span>
+            <h1>AI 基础知识：从概念到产品落地</h1>
+            <p class="lead">这篇笔记面向 AI 产品经理初学者，用简单语言建立 AI 的基础认知：先理解人工智能、机器学习、深度学习、生成式 AI 和大语言模型，再补充 AI 能力类型、数据基础、训练到推理流程、Prompt、RAG、Agent、风险和产品落地视角。</p>
+            <div class="meta-row">
+              <span class="pill">适合：AI 产品经理入门</span>
+              <span class="pill">重点：基础认知与产品判断</span>
+              <span class="pill">日期：2026-06-30</span>
+            </div>
+          </header>
+
+          <div class="article">
+          <section id="overview">
+            <h2>概念总览</h2>
+            <p>可以先把这些概念理解成一组“由大到小、逐层具体”的关系。人工智能是大目标，机器学习是实现 AI 的重要方法，深度学习是机器学习中的重要分支，生成式 AI 是一种能创造内容的 AI，大语言模型则是生成式 AI 中专门处理语言的一类模型。</p>
+            <div class="concept-map">
+              <div class="map-node">
+                <span class="name">人工智能</span>
+                <span class="desc">让机器表现出类似人的智能能力</span>
+              </div>
+              <div class="map-node">
+                <span class="name">机器学习</span>
+                <span class="desc">让机器从数据里学习规律</span>
+              </div>
+              <div class="map-node">
+                <span class="name">深度学习</span>
+                <span class="desc">用多层神经网络学习复杂规律</span>
+              </div>
+              <div class="map-node">
+                <span class="name">生成式 AI</span>
+                <span class="desc">生成文字、图片、代码等新内容</span>
+              </div>
+              <div class="map-node">
+                <span class="name">大语言模型</span>
+                <span class="desc">擅长理解和生成语言的模型</span>
+              </div>
+            </div>
+            <div class="formula">
+              <div class="formula-line">AI ⊃ 机器学习 ⊃ 深度学习 → 生成式 AI → 大语言模型</div>
+              <div>这里的符号只表达学习上的大致包含和演进关系，真实技术世界中不同分支会交叉发展。</div>
+            </div>
+          </section>
+
+          <section id="ai">
+            <h2>人工智能 AI</h2>
+            <p><strong>人工智能</strong>是最大概念，目标是让机器完成原本需要人类智能参与的事情。</p>
+            <div class="simple-box">
+              <strong>简单理解：</strong>AI 就是让机器具备“看、听、读、写、判断、规划、生成”等能力。
+            </div>
+            <p>常见例子包括：人脸识别、语音识别、自动驾驶、智能客服、图片生成、代码生成、智能推荐和机器人控制。</p>
+            <p>对产品经理来说，AI 不是单一功能，而是一类能力集合。做 AI 产品时，更重要的问题是：这个能力能不能解决用户真实任务，能不能稳定集成到业务流程里。</p>
+          </section>
+
+          <section id="capabilities">
+            <h2>AI 能力类型</h2>
+            <p>理解 AI 的第一步，不是急着分辨用了什么模型，而是先判断它在产品里承担什么能力。常见 AI 能力可以粗略分成六类。</p>
+            <div class="capability-grid">
+              <div class="mini-card">
+                <div class="mini-card-title">识别</div>
+                <div class="mini-card-desc">从图片、语音、文本中识别对象、意图、情绪、异常或类别。</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-card-title">预测</div>
+                <div class="mini-card-desc">根据历史数据预测未来结果，例如销量、风险、流失概率。</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-card-title">生成</div>
+                <div class="mini-card-desc">生成文案、图片、代码、报告、方案、摘要或对话回复。</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-card-title">推荐</div>
+                <div class="mini-card-desc">根据用户、内容和场景，推荐商品、文章、任务或下一步操作。</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-card-title">决策辅助</div>
+                <div class="mini-card-desc">把复杂信息整理成建议，帮助人做判断，但最终仍可由人确认。</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-card-title">自动执行</div>
+                <div class="mini-card-desc">结合工具、流程和权限，自动完成查询、分析、写入、生成文件等任务。</div>
+              </div>
+            </div>
+            <div class="callout">
+              <strong>产品判断：</strong>同一个 AI 产品可能同时包含多种能力。例如“智能客服”既要识别用户意图，也要检索知识、生成回答，并在必要时转人工。
+            </div>
+          </section>
+
+          <section id="data-basic">
+            <h2>数据基础</h2>
+            <p>AI 的能力很大程度取决于数据。对产品经理来说，不需要一开始就掌握复杂算法，但需要听懂数据相关的基础词。</p>
+            <table class="compare-table">
+              <thead>
+                <tr>
+                  <th>概念</th>
+                  <th>简单理解</th>
+                  <th>产品例子</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>训练数据</td>
+                  <td>模型学习时看过的数据</td>
+                  <td>历史客服对话、商品图片、订单记录</td>
+                </tr>
+                <tr>
+                  <td>样本</td>
+                  <td>一条可用于学习或评估的数据</td>
+                  <td>一张图片、一条评论、一笔订单</td>
+                </tr>
+                <tr>
+                  <td>标签</td>
+                  <td>人为或系统给出的标准答案</td>
+                  <td>这条评论是正面还是负面</td>
+                </tr>
+                <tr>
+                  <td>特征</td>
+                  <td>帮助模型判断的关键信息</td>
+                  <td>用户年龄、点击次数、购买金额、登录频率</td>
+                </tr>
+                <tr>
+                  <td>数据质量</td>
+                  <td>数据是否准确、完整、一致、及时</td>
+                  <td>字段缺失、标注错误、重复数据都会影响效果</td>
+                </tr>
+                <tr>
+                  <td>数据偏差</td>
+                  <td>数据不均衡导致模型判断偏向某类情况</td>
+                  <td>训练集中大多是老用户，模型就可能不懂新用户</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="simple-box">
+              <strong>记忆方式：</strong>数据像教材，标签像答案，特征像解题线索。教材质量差，模型学出来的能力就容易不稳定。
+            </div>
+          </section>
+
+          <section id="ml">
+            <h2>机器学习 Machine Learning</h2>
+            <p><strong>机器学习</strong>是实现人工智能的重要方式。传统软件更多依赖人工写规则，机器学习则让模型从数据中总结规律。</p>
+            <table class="compare-table">
+              <thead>
+                <tr>
+                  <th>方式</th>
+                  <th>核心逻辑</th>
+                  <th>例子</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>传统编程</td>
+                  <td>人先写好规则，机器按规则执行</td>
+                  <td>如果金额大于 5000 元，就进入人工审核</td>
+                </tr>
+                <tr>
+                  <td>机器学习</td>
+                  <td>给机器大量数据，机器自己学习规律</td>
+                  <td>根据历史订单特征，预测订单是否有风险</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <section id="supervised">
+              <h3>监督学习</h3>
+              <p>监督学习可以理解为“有标准答案的练习题”。训练数据里既有输入，也有正确答案，模型通过反复练习学会预测。</p>
+              <div class="simple-box">
+                <strong>例子：</strong>给模型很多房子的面积、位置、楼层和真实成交价，模型学会预测新房子的价格。
+              </div>
+            </section>
+
+            <section id="unsupervised">
+              <h3>非监督学习</h3>
+              <p>非监督学习可以理解为“没有标准答案，模型自己找规律”。它常用于聚类、降维、异常发现等场景。</p>
+              <div class="simple-box">
+                <strong>例子：</strong>系统没有提前告诉模型哪些用户是高价值用户，但模型可以根据行为相似性，把用户自动分成不同群体。
+              </div>
+            </section>
+
+            <section id="reinforcement">
+              <h3>强化学习</h3>
+              <p>强化学习可以理解为“通过奖励和惩罚学习”。模型做出动作后，根据结果获得奖励或惩罚，慢慢学会更优策略。</p>
+              <div class="simple-box">
+                <strong>例子：</strong>游戏 AI 通过不断尝试，学会怎样走位、攻击和躲避能获得更高分数。
+              </div>
+            </section>
+          </section>
+
+          <section id="deep-learning">
+            <h2>深度学习 Deep Learning</h2>
+            <p><strong>深度学习</strong>是机器学习的一种，核心是使用很多层的神经网络来学习复杂规律。</p>
+            <p>“深度”的意思不是模型像人一样思考很深，而是网络层数比较多。每一层会从输入中提取一部分特征，层层组合后形成更复杂的理解。</p>
+            <div class="card-grid">
+              <div class="note-card">
+                <div class="note-card-head">识别图片 <span class="tag blue">逐层提取</span></div>
+                <div class="note-card-body">底层识别边缘和颜色，中层识别眼睛、耳朵、轮廓，高层判断是不是猫、车或人。</div>
+              </div>
+              <div class="note-card">
+                <div class="note-card-head">理解文本 <span class="tag green">上下文关系</span></div>
+                <div class="note-card-body">底层处理字词，中层处理短语和句法，高层处理语义、意图和上下文关系。</div>
+              </div>
+            </div>
+
+            <section id="neural-network">
+              <h3>神经网络和深度学习的关系</h3>
+              <p><strong>神经网络是一种模型结构，深度学习是使用多层神经网络进行学习的方法。</strong></p>
+              <div class="formula">
+                <div class="formula-line">神经网络 = 工具结构；深度学习 = 用很多层神经网络学习复杂规律</div>
+                <div>不是所有神经网络都叫深度学习。早期简单神经网络层数较少，能力有限；当层数变多、能学习复杂特征时，才更接近今天常说的深度学习。</div>
+              </div>
+              <p>需要注意：神经网络并不等同于真正的人脑。它只是借用了“神经元连接”的类比，本质上仍然是大量数学计算。</p>
+            </section>
+          </section>
+
+          <section id="genai">
+            <h2>生成式人工智能 Generative AI</h2>
+            <p><strong>生成式 AI</strong>的重点不是判断，而是生成新内容。</p>
+            <table class="compare-table">
+              <thead>
+                <tr>
+                  <th>类型</th>
+                  <th>像什么题</th>
+                  <th>输出</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>识别型 AI</td>
+                  <td>判断题、选择题</td>
+                  <td>这张图是不是猫；这条评论是否负面</td>
+                </tr>
+                <tr>
+                  <td>生成式 AI</td>
+                  <td>创作题、开放题</td>
+                  <td>写一段文案；生成一张图；写代码；总结会议纪要</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>生成式 AI 可以生成文字、图片、音频、视频、代码、结构化方案等内容。AI 产品经理需要关注的不只是“能生成”，还要关注生成质量、可控性、成本、速度、合规和用户是否愿意采用。</p>
+          </section>
+
+          <section id="llm">
+            <h2>大语言模型 LLM</h2>
+            <p><strong>大语言模型</strong>是生成式 AI 中专门处理语言的一类模型。它通过学习大量文本，掌握语言模式、知识关联和上下文规律，然后根据输入生成回答。</p>
+            <div class="simple-box">
+              <strong>简单理解：</strong>LLM 的基础训练任务常常可以理解为“根据前面的文字，预测下一个 token”。
+            </div>
+            <p><code>token</code> 是模型处理文本的基本单位，可以是一个字、一个词、一个词的一部分或标点。模型并不是直接“看懂文字”，而是先把文字切成 token，再转换为数字进行计算。</p>
+            <p>大语言模型常见能力包括：对话、总结、翻译、改写、信息抽取、代码生成、逻辑推理辅助、角色扮演、知识问答和多轮任务协作。</p>
+            <div class="callout">
+              <strong>产品提醒：</strong>LLM 很强，但不等于全知全能。它可能生成看似合理但不真实的内容，这类问题通常被称为“幻觉”。涉及事实、法律、医学、金融、合同等高风险内容时，要设计校验机制。
+            </div>
+          </section>
+
+          <section id="transformer">
+            <h2>Transformer</h2>
+            <p><strong>Transformer</strong> 是一种神经网络结构，可以直译为“转换器”。它特别擅长处理文本中的上下文关系，是现代大语言模型的关键基础。</p>
+            <p>它最重要的机制是<strong>注意力机制</strong>。注意力机制可以理解为：模型读一句话时，不是平均看每个词，而是判断哪些词和当前任务更相关，并重点关注它们。</p>
+            <div class="simple-box">
+              <strong>例子：</strong>“小明把书给了小红，因为她忘带课本了。”理解“她”时，模型需要关注“小红”“忘带课本”等信息。
+            </div>
+            <p>Transformer 重要，是因为它可以更高效地处理长文本、捕捉词与词之间的关系，也更适合大规模并行训练。ChatGPT 这类大语言模型的核心技术路线就和 Transformer 密切相关。</p>
+          </section>
+
+          <section id="model-flow">
+            <h2>从训练到推理</h2>
+            <p>AI 模型从“被训练出来”到“进入产品被用户使用”，通常会经历一条完整流程。产品经理需要知道每一步大概在解决什么问题。</p>
+            <div class="flow">
+              <div class="flow-step">
+                <span class="flow-num">1</span>
+                <span class="flow-title">数据准备</span>
+                <span class="flow-desc">收集、清洗、标注、脱敏和整理数据。</span>
+              </div>
+              <div class="flow-step">
+                <span class="flow-num">2</span>
+                <span class="flow-title">模型训练</span>
+                <span class="flow-desc">让模型从数据中学习规律。</span>
+              </div>
+              <div class="flow-step">
+                <span class="flow-num">3</span>
+                <span class="flow-title">模型评估</span>
+                <span class="flow-desc">用测试数据判断效果是否达标。</span>
+              </div>
+              <div class="flow-step">
+                <span class="flow-num">4</span>
+                <span class="flow-title">部署上线</span>
+                <span class="flow-desc">把模型接入真实系统或产品。</span>
+              </div>
+              <div class="flow-step">
+                <span class="flow-num">5</span>
+                <span class="flow-title">推理调用</span>
+                <span class="flow-desc">用户输入问题，模型输出预测或回答。</span>
+              </div>
+              <div class="flow-step">
+                <span class="flow-num">6</span>
+                <span class="flow-title">持续优化</span>
+                <span class="flow-desc">根据反馈、日志和新数据继续改进。</span>
+              </div>
+            </div>
+            <table class="compare-table">
+              <thead>
+                <tr>
+                  <th>词</th>
+                  <th>简单解释</th>
+                  <th>容易混淆点</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>训练</td>
+                  <td>让模型学习规律</td>
+                  <td>训练通常发生在上线前，成本较高</td>
+                </tr>
+                <tr>
+                  <td>推理</td>
+                  <td>模型正式处理用户输入并给出结果</td>
+                  <td>日常调用大模型回答问题，就是推理</td>
+                </tr>
+                <tr>
+                  <td>微调</td>
+                  <td>用特定数据让模型更适合某个场景</td>
+                  <td>不是所有问题都需要微调，很多场景用 Prompt 或 RAG 更合适</td>
+                </tr>
+                <tr>
+                  <td>评估</td>
+                  <td>判断模型效果是否满足业务要求</td>
+                  <td>不能只看演示效果，要看稳定性和错误成本</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section id="prompt-context">
+            <h2>Prompt 与上下文</h2>
+            <p><strong>Prompt</strong> 是给模型的指令或输入。对大语言模型产品来说，Prompt 不只是“写一句话”，它决定了模型知道什么、要做什么、按什么格式输出。</p>
+            <div class="card-grid">
+              <div class="note-card">
+                <div class="note-card-head">Prompt <span class="tag blue">任务指令</span></div>
+                <div class="note-card-body">告诉模型角色、任务、约束、输出格式和判断标准。例如“请以产品经理视角，总结以下用户反馈”。</div>
+              </div>
+              <div class="note-card">
+                <div class="note-card-head">上下文 <span class="tag green">当前可见信息</span></div>
+                <div class="note-card-body">模型当前能看到的对话、文件、检索资料、用户输入和系统规则。</div>
+              </div>
+              <div class="note-card">
+                <div class="note-card-head">上下文窗口 <span class="tag orange">容量限制</span></div>
+                <div class="note-card-body">模型一次能处理的信息长度有限。内容太多时，需要摘要、筛选或分段处理。</div>
+              </div>
+              <div class="note-card">
+                <div class="note-card-head">任务拆解 <span class="tag blue">提高稳定性</span></div>
+                <div class="note-card-body">复杂任务拆成理解需求、检索资料、生成草稿、校验结果等步骤，通常比一次性要求更可靠。</div>
+              </div>
+            </div>
+            <div class="callout">
+              <strong>产品提醒：</strong>很多 AI 产品效果不好，不一定是模型能力不行，也可能是输入信息不足、指令不清、上下文混乱或输出标准不明确。
+            </div>
+          </section>
+
+          <section id="rag-agent">
+            <h2>RAG 与 Agent</h2>
+            <p><strong>RAG</strong> 和 <strong>Agent</strong> 是 AI 产品落地时非常常见的两个概念。它们不是替代大模型，而是让大模型更适合真实业务场景。</p>
+            <div class="card-grid">
+              <div class="note-card">
+                <div class="note-card-head">RAG：检索增强生成 <span class="tag green">知识库</span></div>
+                <div class="note-card-body">先从知识库、文档或数据库中找相关资料，再让大模型基于资料回答。适合企业制度问答、客服知识库、文档助手。</div>
+              </div>
+              <div class="note-card">
+                <div class="note-card-head">Agent：智能体 <span class="tag blue">会执行</span></div>
+                <div class="note-card-body">让模型规划步骤、调用工具、读取文件、查询系统或生成交付物。适合数据分析助手、自动报告、流程自动化。</div>
+              </div>
+            </div>
+            <table class="compare-table">
+              <thead>
+                <tr>
+                  <th>问题</th>
+                  <th>更适合 RAG</th>
+                  <th>更适合 Agent</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>核心目标</td>
+                  <td>让回答基于指定知识</td>
+                  <td>让 AI 完成多步骤任务</td>
+                </tr>
+                <tr>
+                  <td>典型输入</td>
+                  <td>用户问题 + 知识库资料</td>
+                  <td>用户目标 + 工具 + 文件 + 权限</td>
+                </tr>
+                <tr>
+                  <td>产品重点</td>
+                  <td>资料准确、引用清楚、检索命中</td>
+                  <td>任务规划、工具调用、过程可控、失败可恢复</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section id="birth">
+            <h2>LLM 诞生条件</h2>
+            <p>LLM 的出现不是只靠神经网络一个因素，而是多个技术条件一起成熟的结果。</p>
+            <div class="card-grid">
+              <div class="note-card">
+                <div class="note-card-head">统计语言模型 <span class="tag blue">思想基础</span></div>
+                <div class="note-card-body">很早就有“根据前文预测后文”的思想，LLM 把这个方向用更大的模型和数据做到了新高度。</div>
+              </div>
+              <div class="note-card">
+                <div class="note-card-head">海量文本数据 <span class="tag green">知识来源</span></div>
+                <div class="note-card-body">网页、书籍、论文、代码和对话数据帮助模型学习语言规律和世界知识。</div>
+              </div>
+              <div class="note-card">
+                <div class="note-card-head">词向量与表示学习 <span class="tag orange">数学表达</span></div>
+                <div class="note-card-body">把词、句子和语义关系转成向量，让语言可以被模型计算。</div>
+              </div>
+              <div class="note-card">
+                <div class="note-card-head">Transformer <span class="tag blue">结构突破</span></div>
+                <div class="note-card-body">注意力机制让模型更好处理上下文，也让大规模训练效率显著提升。</div>
+              </div>
+              <div class="note-card">
+                <div class="note-card-head">自监督学习 <span class="tag green">训练方式</span></div>
+                <div class="note-card-body">不需要人工给每句话标答案，模型可以从海量文本中自己构造训练任务。</div>
+              </div>
+              <div class="note-card">
+                <div class="note-card-head">算力提升 <span class="tag orange">工程基础</span></div>
+                <div class="note-card-body">GPU、TPU 和分布式训练让超大规模模型训练成为可能。</div>
+              </div>
+              <div class="note-card">
+                <div class="note-card-head">对齐技术 <span class="tag blue">可用性提升</span></div>
+                <div class="note-card-body">指令微调、人类反馈和偏好优化，让模型更像助手，而不是只会续写文本。</div>
+              </div>
+              <div class="note-card">
+                <div class="note-card-head">产品化接口 <span class="tag green">落地条件</span></div>
+                <div class="note-card-body">API、插件、工作流和企业系统集成，让模型能力变成可用产品。</div>
+              </div>
+            </div>
+          </section>
+
+          <section id="limits-risk">
+            <h2>AI 的局限与风险</h2>
+            <p>建立基础认知时，一定要同时理解 AI 的边界。AI 的输出可能很流畅，但流畅不代表一定正确。</p>
+            <table class="compare-table">
+              <thead>
+                <tr>
+                  <th>风险</th>
+                  <th>简单解释</th>
+                  <th>产品设计要点</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>幻觉</td>
+                  <td>模型编造看似合理但不真实的信息</td>
+                  <td>重要结论要引用来源、增加校验和人工确认</td>
+                </tr>
+                <tr>
+                  <td>偏见</td>
+                  <td>训练数据带来的不公平或片面判断</td>
+                  <td>关注样本覆盖、敏感字段和异常案例</td>
+                </tr>
+                <tr>
+                  <td>不稳定</td>
+                  <td>相似输入可能得到不同输出</td>
+                  <td>设置格式约束、结果校验和低温度参数</td>
+                </tr>
+                <tr>
+                  <td>不可解释</td>
+                  <td>有些模型难以清楚说明判断原因</td>
+                  <td>高风险场景要保留规则、证据和人工复核</td>
+                </tr>
+                <tr>
+                  <td>安全与隐私</td>
+                  <td>可能泄露敏感数据或越权调用工具</td>
+                  <td>做权限控制、脱敏、日志审计和操作确认</td>
+                </tr>
+                <tr>
+                  <td>成本</td>
+                  <td>模型调用、检索、存储和算力都会产生成本</td>
+                  <td>评估调用频率、响应速度、缓存和模型选型</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section id="product-forms">
+            <h2>常见 AI 产品形态</h2>
+            <p>AI 能力进入产品后，通常会变成某种用户能感知的产品形态。理解这些形态，有助于把技术能力翻译成产品方案。</p>
+            <div class="capability-grid">
+              <div class="mini-card">
+                <div class="mini-card-title">AI 助手</div>
+                <div class="mini-card-desc">通过对话帮助用户问答、写作、总结、分析或完成任务。</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-card-title">AI 搜索</div>
+                <div class="mini-card-desc">不只返回链接，而是基于资料直接整理答案和引用来源。</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-card-title">AI 客服</div>
+                <div class="mini-card-desc">识别问题、检索知识、生成回复，并在复杂问题上转人工。</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-card-title">AI Copilot</div>
+                <div class="mini-card-desc">嵌入工作界面，在用户操作时提供建议、补全和辅助执行。</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-card-title">AI 工作流</div>
+                <div class="mini-card-desc">把多个步骤串起来，自动处理资料、审批、生成和通知。</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-card-title">AI 数据分析</div>
+                <div class="mini-card-desc">让用户用自然语言查询数据、生成图表、解释指标和输出报告。</div>
+              </div>
+            </div>
+          </section>
+
+          <section id="pm-view">
+            <h2>AI 产品经理视角</h2>
+            <p>作为 AI 产品经理，学习技术概念不是为了变成算法工程师，而是为了能判断能力边界、设计产品体验、拆解需求和推动落地。</p>
+            <ul class="checklist">
+              <li><strong>先看任务：</strong>用户到底要识别、预测、生成、推荐，还是自动执行？</li>
+              <li><strong>再看数据：</strong>是否有足够数据？数据质量如何？是否涉及隐私和权限？</li>
+              <li><strong>再看模型：</strong>这个任务适合规则、传统机器学习、深度学习，还是大语言模型？</li>
+              <li><strong>再看体验：</strong>用户如何输入？如何确认？如何纠错？如何追溯结果？</li>
+              <li><strong>最后看成本和风险：</strong>响应速度、调用成本、错误成本、合规风险是否可接受？</li>
+            </ul>
+            <div class="callout">
+              <strong>一句产品判断：</strong>AI 产品不是把模型放进页面里，而是把模型能力放进一个能被用户信任、能被业务吸收的流程里。
+            </div>
+          </section>
+
+          <section id="summary">
+            <h2>一页总结</h2>
+            <table class="compare-table">
+              <thead>
+                <tr>
+                  <th>概念</th>
+                  <th>一句话理解</th>
+                  <th>产品经理要关注</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>人工智能</td>
+                  <td>让机器具备类似人的智能能力</td>
+                  <td>先判断它在产品中承担什么任务</td>
+                </tr>
+                <tr>
+                  <td>AI 能力类型</td>
+                  <td>识别、预测、生成、推荐、决策辅助、自动执行</td>
+                  <td>不要只问“能不能用 AI”，要问“用 AI 做哪类能力”</td>
+                </tr>
+                <tr>
+                  <td>数据基础</td>
+                  <td>数据、样本、标签、特征决定模型学习材料</td>
+                  <td>关注数据质量、权限、偏差和可用性</td>
+                </tr>
+                <tr>
+                  <td>机器学习</td>
+                  <td>让机器从数据中学习规律</td>
+                  <td>数据是否足够、标签是否可靠</td>
+                </tr>
+                <tr>
+                  <td>深度学习</td>
+                  <td>用多层神经网络学习复杂规律</td>
+                  <td>是否需要大量数据和算力</td>
+                </tr>
+                <tr>
+                  <td>生成式 AI</td>
+                  <td>生成文字、图片、代码等新内容</td>
+                  <td>质量、可控性、版权和审核</td>
+                </tr>
+                <tr>
+                  <td>大语言模型</td>
+                  <td>擅长理解和生成语言的生成式模型</td>
+                  <td>幻觉、上下文、提示词、集成流程</td>
+                </tr>
+                <tr>
+                  <td>Transformer</td>
+                  <td>擅长处理上下文关系的神经网络结构</td>
+                  <td>理解 LLM 为什么能处理复杂文本任务</td>
+                </tr>
+                <tr>
+                  <td>训练与推理</td>
+                  <td>训练是学习规律，推理是上线后处理用户输入</td>
+                  <td>区分上线前成本和日常调用成本</td>
+                </tr>
+                <tr>
+                  <td>Prompt 与上下文</td>
+                  <td>让模型知道任务、信息、约束和输出格式</td>
+                  <td>好的 AI 体验往往来自好的上下文设计</td>
+                </tr>
+                <tr>
+                  <td>RAG 与 Agent</td>
+                  <td>RAG 让模型基于知识回答，Agent 让模型调用工具执行任务</td>
+                  <td>企业落地时重点看知识准确性、权限和过程可控</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="simple-box">
+              <strong>最终记忆版：</strong>人工智能是目标，机器学习是方法，深度学习是更强的学习方法，生成式 AI 是能创造内容的 AI，大语言模型是专门理解和生成语言的生成式 AI。AI 产品经理还要理解数据、训练、推理、Prompt、RAG、Agent、风险和产品流程，因为这些决定 AI 能不能真正落地。
+            </div>
+          </section>
+          </div>
+
+          <footer class="footer-note">
+            <span>AI产品经理学习笔记 · 第一篇</span>
+            <span>后续笔记可继续追加到同一学习笔记体系</span>
+          </footer>
+        </article>
+
+        <aside class="toc-panel" aria-label="当前笔记目录">
+          <div class="toc-title">本篇目录</div>
+          <a class="toc-link" href="#overview">概念总览</a>
+          <a class="toc-link" href="#ai">人工智能 AI</a>
+          <a class="toc-link" href="#capabilities">AI 能力类型</a>
+          <a class="toc-link" href="#data-basic">数据基础</a>
+          <a class="toc-link" href="#ml">机器学习</a>
+          <a class="toc-link sub" href="#supervised">监督学习</a>
+          <a class="toc-link sub" href="#unsupervised">非监督学习</a>
+          <a class="toc-link sub" href="#reinforcement">强化学习</a>
+          <a class="toc-link" href="#deep-learning">深度学习</a>
+          <a class="toc-link sub" href="#neural-network">神经网络</a>
+          <a class="toc-link" href="#genai">生成式 AI</a>
+          <a class="toc-link" href="#llm">大语言模型</a>
+          <a class="toc-link sub" href="#transformer">Transformer</a>
+          <a class="toc-link" href="#model-flow">训练到推理</a>
+          <a class="toc-link" href="#prompt-context">Prompt 与上下文</a>
+          <a class="toc-link" href="#rag-agent">RAG 与 Agent</a>
+          <a class="toc-link" href="#birth">LLM 诞生条件</a>
+          <a class="toc-link" href="#limits-risk">局限与风险</a>
+          <a class="toc-link" href="#product-forms">产品形态</a>
+          <a class="toc-link" href="#pm-view">AI 产品经理视角</a>
+          <a class="toc-link" href="#summary">一页总结</a>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const searchInput = document.getElementById('navSearch');
+    const noteLinks = Array.from(document.querySelectorAll('.note-link'));
+    const tocLinks = Array.from(document.querySelectorAll('.toc-link'));
+    const navEmpty = document.getElementById('navEmpty');
+
+    document.querySelectorAll('.compare-table').forEach((table) => {
+      if (table.parentElement.classList.contains('table-scroll')) return;
+      const wrapper = document.createElement('div');
+      wrapper.className = 'table-scroll';
+      table.parentNode.insertBefore(wrapper, table);
+      wrapper.appendChild(table);
+    });
+
+    function normalizeText(text) {
+      return text.toLowerCase().replace(/\s+/g, '');
+    }
+
+    function escapeRegExp(value) {
+      return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function highlightLabel(item, query) {
+      const name = item.querySelector('.note-name');
+      const desc = item.querySelector('.note-desc');
+      const originalName = name.dataset.original || name.textContent;
+      const originalDesc = desc.dataset.original || desc.textContent;
+      name.dataset.original = originalName;
+      desc.dataset.original = originalDesc;
+      if (!query) {
+        name.textContent = originalName;
+        desc.textContent = originalDesc;
+        return;
+      }
+      const reg = new RegExp(`(${escapeRegExp(query)})`, 'ig');
+      name.innerHTML = originalName.replace(reg, '<mark>$1</mark>');
+      desc.innerHTML = originalDesc.replace(reg, '<mark>$1</mark>');
+    }
+
+    searchInput.addEventListener('input', () => {
+      const rawQuery = searchInput.value.trim();
+      const query = normalizeText(rawQuery);
+      let visibleCount = 0;
+
+      noteLinks.forEach((link) => {
+        const title = normalizeText(link.dataset.title);
+        const matched = !query || title.includes(query);
+        link.style.display = matched ? 'block' : 'none';
+        if (matched) {
+          visibleCount += 1;
+          highlightLabel(link, rawQuery);
+        } else {
+          highlightLabel(link, '');
+        }
+      });
+
+      navEmpty.style.display = visibleCount === 0 ? 'block' : 'none';
+    });
+
+    const sections = tocLinks
+      .map((link) => document.querySelector(link.getAttribute('href')))
+      .filter(Boolean);
+
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+      if (!visible) return;
+
+      tocLinks.forEach((link) => {
+        link.classList.toggle('active', link.getAttribute('href') === `#${visible.target.id}`);
+      });
+    }, {
+      root: document.querySelector('.content'),
+      threshold: [0.2, 0.4, 0.6]
+    });
+
+    sections.forEach((section) => observer.observe(section));
+  </script>
+</body>
+</html>
